@@ -87,11 +87,18 @@ def build_daily_plan(user, date_str=None):
         raise ValueError("Add at least one subject before generating a plan.")
 
     all_topics = Topic.objects(subject_id__in=list(subjects.keys()))
-    pending = [t for t in all_topics if t.status != "completed"]
-    if not pending:
+
+    if not all_topics:
         raise ValueError(
-            "All your topics are complete. Add new topics to keep the streak going!"
-        )
+           "Add at least one topic before generating a study plan."
+    )
+
+    pending = [t for t in all_topics if t.status != "completed"]
+
+    if not pending:
+      raise ValueError(
+        "All your topics are complete. Add new topics to keep the streak going!" 
+                        )  
 
     daily_minutes = int(round(float(user.daily_study_hours or 4) * 60))
     start_minutes = _parse_clock(user.preferred_start_time or "18:00")
