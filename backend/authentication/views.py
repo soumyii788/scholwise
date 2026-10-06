@@ -7,6 +7,8 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from services import ai_service
+from services.priority import score_topic
 from study_sessions.models import StudySession
 from subjects.models import Subject
 from topics.models import Topic
@@ -142,3 +144,137 @@ class DashboardStatsView(APIView):
                 "daily_study_hours": request.user.daily_study_hours,
             }
         )
+
+
+class SmartInsightsView(APIView):
+    """
+    Compute 3-4 data-driven study insights for the dashboard.
+
+    Uses the existing priority engine and (optionally) the AI service.
+    Never errors hard — returns partial data with an `empty` flag when
+    the student has no subjects/topics yet.
+    """
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user_id = str(request.user.id)
+        subjects = list(Subject.objects(user_id=user_id))
+
+        if not subjects:
+            return Response({"empty": True, "insights": []})
+
+        # Build a flat list of (topic, subject) pairs for pending topics
+        pending_pairs = []
+        subject_pending_counts = {}  # subject_id -> (subject, count, total_minutes)
+
+        for subject in subjects:
+            pending_topics = list(
+                Topic.objects(subject_id=str(subject.id), status__ne="completed")
+            )
+            count = len(pending_topics)
+            total_minutes = sum(t.estimated_minutes or 30 for t in pending_topics)
+            subject_pending_counts[str(subject.id)] = {
+                "subject": subject,
+                "pending_count": count,
+                "total_minutes": total_minutes,
+            }
+            for topic in pending_topics:
+                pending_pairs.append((topic, subject))
+
+        if not pending_pairs:
+            return Response({"empty": True, "insights": []})
+
+        # ── Insight 1: highest-priority topic ────────────────────────────
+        scored = [
+            (topic, subject, score_topic(topic, subject))
+            for topic, subject in pending_pairs
+        ]
+        scored.sort(key=lambda x: x[2]["score"], reverse=True)
+        top_topic, top_subject, top_score = scored[0]
+
+        # ── Insight 2: subject with most unfinished work ──────────────────
+        busiest = max(
+            subject_pending_counts.values(),
+            key=lambda v: v["pending_count"],
+        )
+
+        # ── Insight 3: total pending time ─────────────────────────────────
+        total_pending_minutes = sum(
+            v["total_minutes"] for v in subject_pending_counts.values()
+        )
+
+        # ── Insight 4: AI recommendation (optional) ───────────────────────
+        ai_tip = None
+        if ai_service.ai_enabled():
+            subject_lines = "; ".join(
+                f"{v['subject'].name}: {v['pending_count']} topics, "
+                f"{v['total_minutes']}min remaining"
+                for v in subject_pending_counts.values()
+                if v["pending_count"] > 0
+            )
+            prompt = (
+                f"Student has these pending subjects: {subject_lines}. "
+                f"Top priority topic: '{top_topic.name}' in {top_subject.name} "
+                f"(score {top_score['score']}, urgency: {top_score['urgency_label']}). "
+                "Give one concrete, actionable study tip in 30 words or less. "
+                "No bullet points, no markdown."
+            )
+            ai_tip = ai_service._chat(
+                [
+                    {
+                        "role": "system",
+                        "content": "You are a concise study coach. Reply with one tip only.",
+                    },
+                    {"role": "user", "content": prompt},
+                ],
+                max_tokens=80,
+            )
+
+        insights = [
+            {
+                "id": "top_topic",
+                "icon": "🔥",
+                "label": "Study next",
+                "value": top_topic.name,
+                "sub": f"{top_subject.name} · {top_score['urgency_label']} urgency",
+            },
+            {
+                "id": "busiest_subject",
+                "icon": "⚠️",
+                "label": "Most work remaining",
+                "value": busiest["subject"].name,
+                "sub": f"{busiest['pending_count']} topic{'s' if busiest['pending_count'] != 1 else ''} pending",
+            },
+            {
+                "id": "time_needed",
+                "icon": "⏱️",
+                "label": "Estimated time to finish",
+                "value": _format_minutes(total_pending_minutes),
+                "sub": f"across {len([v for v in subject_pending_counts.values() if v['pending_count'] > 0])} subject(s)",
+            },
+        ]
+
+        if ai_tip:
+            insights.append(
+                {
+                    "id": "ai_tip",
+                    "icon": "💡",
+                    "label": "Study tip",
+                    "value": ai_tip,
+                    "sub": "AI recommendation",
+                }
+            )
+
+        return Response({"empty": False, "insights": insights})
+
+
+def _format_minutes(minutes):
+    """Human-readable duration, e.g. '3h 20min' or '45min'."""
+    minutes = int(minutes)
+    if minutes < 60:
+        return f"{minutes}min"
+    hours, remaining = divmod(minutes, 60)
+    if remaining == 0:
+        return f"{hours}h"
+    return f"{hours}h {remaining}min"

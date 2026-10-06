@@ -46,7 +46,9 @@ export const authApi = {
   profile: () => api.get("/profile/").then((r) => r.data.user),
   updateProfile: (payload) => api.put("/profile/", payload).then((r) => r.data.user),
   dashboardStats: () => api.get("/dashboard/stats/").then((r) => r.data),
+  smartInsights: () => api.get("/dashboard/insights/").then((r) => r.data),
 };
+
 
 // ---- Subjects ---------------------------------------------------------------
 export const subjectsApi = {
