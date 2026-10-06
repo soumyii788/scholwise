@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from rest_framework.test import APIClient
 
 from django.test import TestCase
@@ -91,8 +93,11 @@ class FullUserFlowTests(StudyFlowTestCase):
         self.make_topic(client, subject["id"])
         self.generate_plan(client)
 
-        for endpoint in ("/api/study-plan/explain/", "/api/study-plan/suggestions/"):
-            response = client.post(endpoint, {}, format="json")
-            self.assertEqual(response.status_code, 200)
-            self.assertFalse(response.data["ai_available"])
-            self.assertIn("detail", response.data)
+        # Force ai_enabled() → False regardless of what is in .env,
+        # so this test always exercises the "no API key configured" code path.
+        with patch("services.ai_service.ai_enabled", return_value=False):
+            for endpoint in ("/api/study-plan/explain/", "/api/study-plan/suggestions/"):
+                response = client.post(endpoint, {}, format="json")
+                self.assertEqual(response.status_code, 200)
+                self.assertFalse(response.data["ai_available"])
+                self.assertIn("detail", response.data)

@@ -409,6 +409,84 @@ label { display: flex; flex-direction: column; gap: 6px; font-weight: 600; font-
 .ai-box ul { margin: 8px 0 0; padding-left: 20px; }
 .ai-box li { margin-bottom: 6px; }
 
+/* ===== Smart Insights ===== */
+.insights-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 10px;
+  margin-top: 4px;
+}
+.insight-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+.insight-icon {
+  font-size: 1.5rem;
+  line-height: 1;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.insight-body { flex: 1; min-width: 0; }
+.insight-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-soft);
+  margin: 0 0 2px;
+}
+.insight-value {
+  font-weight: 700;
+  font-size: 0.97rem;
+  color: var(--text);
+  margin: 0 0 2px;
+  word-break: break-word;
+}
+.insight-sub {
+  font-size: 0.76rem;
+  color: var(--text-soft);
+  margin: 0;
+}
+.insights-empty {
+  color: var(--text-soft);
+  font-size: 0.9rem;
+  margin: 4px 0 0;
+}
+
+/* Skeleton shimmer */
+@keyframes shimmer {
+  from { background-position: -400px 0; }
+  to   { background-position:  400px 0; }
+}
+.insight-skeleton {
+  pointer-events: none;
+}
+.insight-skeleton-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, var(--border) 25%, #eef0f6 50%, var(--border) 75%);
+  background-size: 800px 100%;
+  animation: shimmer 1.4s infinite linear;
+  flex-shrink: 0;
+}
+.insight-skeleton-body { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+.insight-skeleton-line {
+  height: 12px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, var(--border) 25%, #eef0f6 50%, var(--border) 75%);
+  background-size: 800px 100%;
+  animation: shimmer 1.4s infinite linear;
+}
+.insight-skeleton-short { width: 40%; }
+.insight-skeleton-long  { width: 75%; }
+
+
 /* ===== Exam list ===== */
 .exam-row {
   display: flex;

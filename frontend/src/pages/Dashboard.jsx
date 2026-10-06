@@ -10,7 +10,9 @@ import {
 import Loading from "../components/Loading.jsx";
 import ProgressBar from "../components/ProgressBar.jsx";
 import StudySessionRow from "../components/StudySession.jsx";
+import SmartInsights from "../components/SmartInsights.jsx";
 import { greetingForHour, firstName, formatDuration, daysLeftLabel, urgencyBadgeClass } from "../utils/helpers.js";
+
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -134,6 +136,17 @@ export default function Dashboard() {
         <div className="card stat-card">
           <div className="stat-value">{stats?.overall_progress ?? 0}%</div>
           <div className="stat-label">Overall progress</div>
+        </div>
+      </div>
+
+      {/* ---- Smart Insights ---- */}
+      <div className="section">
+        <div className="card">
+          <div className="section-head">
+            <h2>Smart Insights</h2>
+            <small>Based on your real study data</small>
+          </div>
+          <SmartInsights />
         </div>
       </div>
 

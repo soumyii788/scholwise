@@ -33,7 +33,7 @@ export default function Login() {
   return (
     <div className="auth-page">
       <div className="auth-card">
-        <h1><span className="brand-mark">SF</span> StudyFlow</h1>
+        <h1><span className="brand-mark">SW</span> ScholaWise</h1>
         <p className="auth-sub">Welcome back! Log in to see today's study plan.</p>
 
         {error && <div className="form-banner error">{error}</div>}
@@ -68,7 +68,7 @@ export default function Login() {
         </form>
 
         <p className="auth-alt">
-          New to StudyFlow? <Link to="/register">Create an account</Link>
+          New to ScholaWise? <Link to="/register">Create an account</Link>
         </p>
       </div>
     </div>

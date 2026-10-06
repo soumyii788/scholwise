@@ -65,7 +65,7 @@ export default function Navbar() {
   return (
     <header className="navbar">
       <Link to="/dashboard" className="navbar-brand">
-        <span className="brand-mark">SF</span> StudyFlow
+        <span className="brand-mark">SW</span> ScholaWise
       </Link>
 
       <div className="navbar-actions">
