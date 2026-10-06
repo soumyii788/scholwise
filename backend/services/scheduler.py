@@ -179,7 +179,7 @@ def build_daily_plan(user, date_str=None):
                 "end_time": format_time(end),
                 "duration": block["minutes"],
                 "is_break": block.get("is_break", False),
-                "session_type": "break" if block.get("is_break") else "study",
+                "session_type": "break" if block.get("is_break") else ("revision" if block.get("is_revision") else "study"),
                 "status": "pending",
                 "subject_id": str(block["subject"].id) if block.get("subject") else None,
                 "topic_id": str(block["topic"].id) if block.get("topic") else None,

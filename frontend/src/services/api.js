@@ -33,7 +33,7 @@ export function getErrorMessage(error, fallback = "Something went wrong. Please 
     }
   }
   if (error?.message === "Network Error") {
-    return "Cannot reach the StudyFlow server. Is the backend running?";
+    return "Cannot reach the ScholaWise server. Is the backend running?";
   }
   return fallback;
 }

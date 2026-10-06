@@ -44,7 +44,7 @@ export default function Register() {
   return (
     <div className="auth-page">
       <div className="auth-card">
-        <h1><span className="brand-mark">SF</span> StudyFlow</h1>
+        <h1><span className="brand-mark">SW</span> ScholaWise</h1>
         <p className="auth-sub">Create your account and never cram the night before again.</p>
 
         {error && <div className="form-banner error">{error}</div>}
@@ -99,7 +99,7 @@ export default function Register() {
         </form>
 
         <p className="auth-alt">
-          Already have an account? <Link to="/login">Log in</Link>
+          Already have a ScholaWise account? <Link to="/login">Log in</Link>
         </p>
       </div>
     </div>

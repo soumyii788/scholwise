@@ -38,7 +38,7 @@ class RegisterView(APIView):
 
         NotificationService.create(
             user,
-            "Welcome to StudyFlow! Add your subjects and generate your first plan.",
+            "Welcome to ScholaWise! Add your subjects and generate your first plan.",
             notification_type="system",
         )
 

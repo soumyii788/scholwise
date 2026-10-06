@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { getErrorMessage } from "../services/api.js";
 
 const EMPTY = { name: "", exam_date: "", preparation_percentage: 0, difficulty: "Medium", notes: "" };
 
@@ -53,7 +54,7 @@ export default function SubjectFormModal({ subject, onClose, onSubmit }) {
         notes: form.notes.trim(),
       });
     } catch (submitError) {
-      setError(submitError.friendlyMessage || "Could not save the subject.");
+      setError(getErrorMessage(submitError, "Could not save the subject."));
     } finally {
       setSaving(false);
     }
