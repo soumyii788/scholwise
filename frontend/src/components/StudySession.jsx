@@ -5,27 +5,32 @@ export default function StudySession({ session, onToggle }) {
     return (
       <div className="session-row break-row">
         <span className="session-time">
-          {minutesToClock(toMinutes(session.start_time))} – {minutesToClock(toMinutes(session.end_time))}
+          {minutesToClock(toMinutes(session.start_time))}
         </span>
         <span className="session-main">
-          ☕ Break <small>({formatDuration(session.duration)})</small>
+          <span style={{ fontSize: "0.84rem", color: "var(--text-muted)" }}>
+            Break · {formatDuration(session.duration)}
+          </span>
         </span>
       </div>
     );
   }
 
   const isRevision = session.session_type === "revision" || session.topic_id === null;
+  const isCompleted = session.status === "completed";
 
   return (
-    <div className={`session-row ${session.status === "completed" ? "completed" : ""}`}>
+    <div className={`session-row ${isCompleted ? "completed" : ""}`}>
       <span className="session-time">
-        {minutesToClock(toMinutes(session.start_time))} – {minutesToClock(toMinutes(session.end_time))}
+        {minutesToClock(toMinutes(session.start_time))}
       </span>
 
       <span className="session-main">
         <strong>{session.subject_name || "Study"}</strong>
         <span className="session-topic">
-          {isRevision ? `Revision: ${session.label || session.subject_name}` : session.topic_name}
+          {isRevision
+            ? `Revision · ${session.label || session.subject_name}`
+            : session.topic_name}
         </span>
       </span>
 
@@ -34,10 +39,10 @@ export default function StudySession({ session, onToggle }) {
         {isRevision ? (
           <span className="revision-pill">Revision</span>
         ) : (
-          <label className="checkbox">
+          <label className="checkbox" style={{ cursor: "pointer" }}>
             <input
               type="checkbox"
-              checked={session.status === "completed"}
+              checked={isCompleted}
               onChange={() => onToggle?.(session)}
             />
             Done
