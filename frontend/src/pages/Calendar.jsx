@@ -34,9 +34,7 @@ export default function CalendarPage() {
     }
   }, [month]);
 
-  useEffect(() => {
-    load();
-  }, [load]);
+  useEffect(() => { load(); }, [load]);
 
   const today = todayISO();
   const cells = buildCalendarGrid(month);
@@ -46,16 +44,19 @@ export default function CalendarPage() {
     <div>
       <div className="section-head">
         <div>
-          <h1>Calendar</h1>
-          <p style={{ color: "var(--text-soft)" }}>Study sessions and exam dates at a glance.</p>
+          <p className="section-label">Study planner</p>
+          <h1>Schedule</h1>
+          <p style={{ color: "var(--text-soft)", marginTop: 4, fontSize: "0.88rem" }}>
+            Sessions and exam dates at a glance.
+          </p>
         </div>
       </div>
 
       <div className="card">
         <div className="cal-head">
-          <button className="button ghost" onClick={() => setMonth(shiftMonth(month, -1))}>←</button>
-          <h2>{monthLabel(month)}</h2>
-          <button className="button ghost" onClick={() => setMonth(shiftMonth(month, 1))}>→</button>
+          <button className="button ghost" style={{ padding: "6px 14px" }} onClick={() => setMonth(shiftMonth(month, -1))}>←</button>
+          <h2 style={{ margin: 0 }}>{monthLabel(month)}</h2>
+          <button className="button ghost" style={{ padding: "6px 14px" }} onClick={() => setMonth(shiftMonth(month, 1))}>→</button>
         </div>
 
         {error && <div className="form-banner error">{error}</div>}
@@ -73,21 +74,27 @@ export default function CalendarPage() {
                 const sessions = data.sessions_by_date[dateStr] || [];
                 const exams = data.exams.filter((exam) => exam.date === dateStr);
                 const studyCount = sessions.filter((s) => !s.is_break).length;
+                const hasCompleted = sessions.some((s) => s.status === "completed" && !s.is_break);
 
                 return (
                   <div key={dateStr} className={`cal-cell ${dateStr === today ? "today" : ""}`}>
                     <div className="cal-daynum">{day}</div>
-                    {studyCount > 0 && (
-                      <div className="cal-chip" title={sessions.map((s) => s.topic_name || s.subject_name).filter(Boolean).join(", ")}>
-                        📖 {studyCount} session{studyCount > 1 ? "s" : ""}
+                    {studyCount > 0 && !hasCompleted && (
+                      <div
+                        className="cal-chip"
+                        title={sessions.map((s) => s.topic_name || s.subject_name).filter(Boolean).join(", ")}
+                      >
+                        {studyCount} session{studyCount > 1 ? "s" : ""}
                       </div>
                     )}
-                    {sessions.some((s) => s.status === "completed" && !s.is_break) && (
-                      <div className="cal-chip done">✅ done</div>
+                    {hasCompleted && (
+                      <div className="cal-chip done">
+                        {studyCount} done
+                      </div>
                     )}
                     {exams.map((exam) => (
                       <div key={exam.subject_id} className="cal-chip exam" title={`${exam.name} exam`}>
-                        📝 {exam.name}
+                        {exam.name}
                       </div>
                     ))}
                   </div>
@@ -96,9 +103,18 @@ export default function CalendarPage() {
             </div>
 
             <div className="cal-legend">
-              <span>📖 Study sessions</span>
-              <span>✅ Completed sessions</span>
-              <span>📝 Exam date</span>
+              <span>
+                <span className="cal-legend-dot" style={{ background: "var(--border-light)" }} />
+                Sessions
+              </span>
+              <span>
+                <span className="cal-legend-dot" style={{ background: "var(--success)" }} />
+                Completed
+              </span>
+              <span>
+                <span className="cal-legend-dot" style={{ background: "var(--red)" }} />
+                Exam date
+              </span>
             </div>
           </>
         )}

@@ -82,8 +82,9 @@ export default function Subjects() {
     <div>
       <div className="section-head">
         <div>
+          <p className="section-label">Your study material</p>
           <h1>Subjects</h1>
-          <p style={{ color: "var(--text-soft)" }}>
+          <p style={{ color: "var(--text-soft)", marginTop: 4, fontSize: "0.88rem" }}>
             Add subjects with exam dates, then break them into topics.
           </p>
         </div>
@@ -96,17 +97,18 @@ export default function Subjects() {
 
       {subjects.length === 0 ? (
         <div className="card empty-state">
-          <h2>No subjects yet</h2>
-          <p>Add your first subject - the scheduler needs something to plan around!</p>
+          <h2>No subjects yet.</h2>
+          <p>Add your first subject and we'll build your study plan around it.</p>
           <button className="button primary" onClick={() => setModal({ mode: "create" })}>
-            + Add subject
+            Add first subject
           </button>
         </div>
       ) : (
-        subjects.map((subject) => (
+        subjects.map((subject, index) => (
           <SubjectCard
             key={subject.id}
             subject={subject}
+            index={index}
             onAddTopic={handleAddTopic}
             onUpdateTopic={() => {}}
             onDeleteTopic={handleDeleteTopic}
@@ -128,15 +130,15 @@ export default function Subjects() {
       {confirmDelete && (
         <div className="modal-overlay" onClick={() => setConfirmDelete(null)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <h2>
-              Delete {confirmDelete.type === "subject" ? confirmDelete.subject.name : confirmDelete.topic.name}?
-            </h2>
+            <div className="modal-head">
+              <h2>Delete {confirmDelete.type === "subject" ? confirmDelete.subject.name : confirmDelete.topic.name}?</h2>
+            </div>
             {confirmDelete.type === "subject" && (
-              <p style={{ color: "var(--text-soft)" }}>
+              <p style={{ color: "var(--text-soft)", fontSize: "0.86rem", marginTop: 8 }}>
                 This also removes its topics and any generated sessions for them.
               </p>
             )}
-            <div className="modal-actions" style={{ marginTop: 16 }}>
+            <div className="modal-actions" style={{ marginTop: 20 }}>
               <button className="button ghost" onClick={() => setConfirmDelete(null)}>Cancel</button>
               <button className="button danger" onClick={performDelete}>Delete</button>
             </div>

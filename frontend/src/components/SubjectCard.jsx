@@ -2,6 +2,9 @@ import { useState } from "react";
 import ProgressBar from "./ProgressBar.jsx";
 import { daysLeftLabel, urgencyBadgeClass, formatDuration } from "../utils/helpers.js";
 
+// Rotating subject markers for visual variety
+const MARKERS = ["●", "◆", "■", "◇", "▲", "○"];
+
 export default function SubjectCard({
   subject,
   onAddTopic,
@@ -10,6 +13,7 @@ export default function SubjectCard({
   onToggleComplete,
   onEdit,
   onDelete,
+  index = 0,
 }) {
   const [expanded, setExpanded] = useState(false);
   const [topicForm, setTopicForm] = useState({ name: "", estimated_minutes: 45, difficulty: "Medium" });
@@ -18,6 +22,7 @@ export default function SubjectCard({
   const completed = (subject.topics || []).filter((t) => t.status === "completed").length;
   const total = (subject.topics || []).length;
   const progress = total ? Math.round((completed / total) * 100) : 0;
+  const marker = MARKERS[index % MARKERS.length];
 
   async function handleAddTopic(event) {
     event.preventDefault();
@@ -45,30 +50,48 @@ export default function SubjectCard({
 
   return (
     <div className="subject-card card">
+      {/* Card header */}
       <div className="subject-head" onClick={() => setExpanded((v) => !v)}>
-        <div>
-          <h3>{subject.name}</h3>
+        <div style={{ minWidth: 0 }}>
+          <h3>
+            <span className="subject-marker" aria-hidden="true">{marker}</span>
+            {subject.name}
+          </h3>
           <div className="subject-badges">
             <span className={urgencyBadgeClass(subject.days_until_exam)}>
               {daysLeftLabel(subject.days_until_exam)}
             </span>
             <span className="badge badge-neutral">{subject.difficulty}</span>
-            <span className="badge badge-info">{subject.preparation_percentage}% prepared</span>
+            <span className="badge badge-neutral">{subject.preparation_percentage}% prepared</span>
           </div>
         </div>
         <div className="subject-actions" onClick={(e) => e.stopPropagation()}>
-          <button className="icon-button" title="Edit subject" onClick={() => onEdit?.(subject)}>✏️</button>
-          <button className="icon-button" title="Delete subject" onClick={() => onDelete?.(subject)}>🗑️</button>
+          <button
+            className="icon-button"
+            title="Edit subject"
+            onClick={() => onEdit?.(subject)}
+            style={{ fontSize: "0.75rem" }}
+          >
+            Edit
+          </button>
+          <button
+            className="icon-button"
+            title="Delete subject"
+            onClick={() => onDelete?.(subject)}
+            style={{ fontSize: "0.75rem" }}
+          >
+            ✕
+          </button>
         </div>
       </div>
 
+      {/* Progress */}
       <div className="subject-progress">
         <ProgressBar value={progress} />
-        <small>
-          {completed}/{total} topics completed
-        </small>
+        <small>{completed}/{total} topics</small>
       </div>
 
+      {/* Expanded: topic list */}
       {expanded && (
         <div className="topic-section">
           <ul className="topic-list">
@@ -88,12 +111,15 @@ export default function SubjectCard({
                   className="icon-button"
                   title="Delete topic"
                   onClick={() => onDeleteTopic?.(topic)}
+                  style={{ fontSize: "0.72rem" }}
                 >
                   ✕
                 </button>
               </li>
             ))}
-            {total === 0 && <li className="topic-empty">No topics yet - add your first one below.</li>}
+            {total === 0 && (
+              <li className="topic-empty">No topics yet. Add your first one below.</li>
+            )}
           </ul>
 
           <form className="topic-form" onSubmit={handleAddTopic}>
@@ -106,7 +132,7 @@ export default function SubjectCard({
               type="number"
               min="5"
               max="300"
-              title="Estimated minutes (5-300)"
+              title="Estimated minutes (5–300)"
               value={topicForm.estimated_minutes}
               onChange={(e) => setTopicForm({ ...topicForm, estimated_minutes: e.target.value })}
             />
@@ -118,9 +144,11 @@ export default function SubjectCard({
               <option>Medium</option>
               <option>Hard</option>
             </select>
-            <button type="submit" className="button secondary">Add topic</button>
+            <button type="submit" className="button secondary" style={{ padding: "8px 14px" }}>
+              Add topic
+            </button>
           </form>
-          {topicError && <p className="field-error">{topicError}</p>}
+          {topicError && <p className="field-error" style={{ marginTop: 8 }}>{topicError}</p>}
         </div>
       )}
     </div>
