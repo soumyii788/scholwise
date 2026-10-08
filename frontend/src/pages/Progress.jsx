@@ -39,10 +39,10 @@ export default function Progress() {
         <h2>Overall</h2>
         <ProgressBar value={data.totals.overall_progress} />
         <div className="plan-summary">
-          <span>📚 Subjects: <strong>{data.totals.subjects}</strong></span>
-          <span>Topics: <strong>{data.totals.total_topics}</strong></span>
-          <span>✅ Completed: <strong>{data.totals.completed}</strong></span>
-          <span>⏳ Pending: <strong>{data.totals.pending}</strong></span>
+          <span>Subjects <strong>{data.totals.subjects}</strong></span>
+          <span>Topics <strong>{data.totals.total_topics}</strong></span>
+          <span>Completed <strong>{data.totals.completed}</strong></span>
+          <span>Pending <strong>{data.totals.pending}</strong></span>
         </div>
       </div>
 

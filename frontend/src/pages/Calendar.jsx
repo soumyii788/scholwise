@@ -104,7 +104,7 @@ export default function CalendarPage() {
 
             <div className="cal-legend">
               <span>
-                <span className="cal-legend-dot" style={{ background: "var(--border-light)" }} />
+                <span className="cal-legend-dot" style={{ background: "#C9BFAD" }} />
                 Sessions
               </span>
               <span>
