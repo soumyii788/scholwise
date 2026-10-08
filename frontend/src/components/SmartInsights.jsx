@@ -59,9 +59,6 @@ export default function SmartInsights() {
     <div className="insights-grid">
       {data.insights.map((insight) => (
         <div key={insight.id} className="insight-card">
-          <span className="insight-icon" aria-hidden="true">
-            {insight.icon}
-          </span>
           <div className="insight-body">
             <p className="insight-label">{insight.label}</p>
             <p className="insight-value">{insight.value}</p>

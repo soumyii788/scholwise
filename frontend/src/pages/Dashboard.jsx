@@ -22,6 +22,29 @@ function todayLabel() {
   });
 }
 
+const RING_RADIUS = 40;
+const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
+
+function ProgressRing({ value }) {
+  const pct = Math.max(0, Math.min(100, Math.round(value || 0)));
+  return (
+    <div className="focus-ring" role="img" aria-label={`${pct}% of today's plan complete`}>
+      <svg width="100%" height="100%" viewBox="0 0 96 96">
+        <circle className="focus-ring-track" cx="48" cy="48" r={RING_RADIUS} />
+        <circle
+          className="focus-ring-fill"
+          cx="48"
+          cy="48"
+          r={RING_RADIUS}
+          strokeDasharray={RING_CIRCUMFERENCE}
+          strokeDashoffset={RING_CIRCUMFERENCE * (1 - pct / 100)}
+        />
+      </svg>
+      <span className="focus-ring-label">{pct}%</span>
+    </div>
+  );
+}
+
 export default function Dashboard() {
   const { user } = useAuth();
   const [stats, setStats] = useState(null);
@@ -133,27 +156,29 @@ export default function Dashboard() {
       {/* ── Today's Focus ── */}
       {summary?.planned && focusSession && (
         <div className="focus-card" style={{ marginBottom: 24 }}>
-          <div className="focus-label">Today's Focus</div>
-          <h2 style={{ marginBottom: 2 }}>{focusSession.subject_name || "Study"}</h2>
-          <p style={{ color: "var(--text-soft)", fontSize: "0.86rem" }}>
-            {focusSession.topic_name || focusSession.label || "Review session"}
-            {" · "}
-            {formatDuration(focusSession.duration)}
-          </p>
-          <div className="focus-progress-track">
-            <div className="focus-progress-fill" style={{ width: `${progressPct}%` }} />
-          </div>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10 }}>
-            <span style={{ fontSize: "0.76rem", color: "var(--text-muted)" }}>
-              {completedSessions} of {totalSessions} sessions done · {progressPct}% complete
-            </span>
-            <button
-              className="button primary"
-              onClick={() => handleToggleSession(focusSession)}
-              style={{ padding: "7px 16px", fontSize: "0.82rem" }}
-            >
-              Mark complete
-            </button>
+          <div className="focus-grid">
+            <div className="focus-info">
+              <div className="focus-label">Today's Focus</div>
+              <h2>{focusSession.subject_name || "Study"}</h2>
+              <p style={{ color: "var(--text-soft)", fontSize: "0.86rem", marginBottom: 0 }}>
+                {focusSession.topic_name || focusSession.label || "Review session"}
+                {" · "}
+                {formatDuration(focusSession.duration)}
+              </p>
+              <div className="focus-meta-row">
+                <span className="focus-progress-text">
+                  {completedSessions} of {totalSessions} sessions done
+                </span>
+                <button
+                  className="button primary"
+                  onClick={() => handleToggleSession(focusSession)}
+                  style={{ padding: "7px 16px", fontSize: "0.82rem" }}
+                >
+                  Mark complete
+                </button>
+              </div>
+            </div>
+            <ProgressRing value={progressPct} />
           </div>
         </div>
       )}
@@ -173,7 +198,7 @@ export default function Dashboard() {
           <div className="stat-label">Remaining</div>
         </div>
         <div className="card stat-card">
-          <div className="stat-value" style={{ color: stats?.overall_progress > 0 ? "var(--red)" : undefined }}>
+          <div className="stat-value" style={{ color: stats?.overall_progress > 0 ? "var(--primary)" : undefined }}>
             {stats?.overall_progress ?? 0}%
           </div>
           <div className="stat-label">Overall</div>
