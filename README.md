@@ -1,14 +1,14 @@
-# StudyFlow — AI Study Planner
+# Scholarwise — AI Study Planner
 
-StudyFlow helps college students answer one question every day:
+Scholarwise helps college students answer one question every day:
 
 > **"What should I study today, how much time should I spend on it, and what should I revise?"**
 
-Enter your subjects, exam dates, preparation levels, and available study hours. StudyFlow scores every pending topic by exam urgency, preparation deficit, and difficulty — then builds a practical daily schedule with breaks and revision time. An optional AI layer can explain the plan and suggest improvements, but **the app works fully without any AI API key**.
+Enter your subjects, exam dates, preparation levels, and available study hours. Scholarwise scores every pending topic by exam urgency, preparation deficit, and difficulty — then builds a practical daily schedule with breaks and revision time. An optional AI layer can explain the plan and suggest improvements, but **the app works fully without any AI API key**.
 
 ## Description
 
-Students juggle multiple subjects, limited hours, different preparation levels, and approaching exams. StudyFlow removes the guesswork:
+Students juggle multiple subjects, limited hours, different preparation levels, and approaching exams. Scholarwise removes the guesswork:
 
 - Prioritizes topics using a transparent scoring formula (no black box)
 - Fits the day's highest-value work inside the time you actually have

@@ -45,7 +45,7 @@ export default function Register() {
     <div className="auth-page">
       <aside className="auth-visual">
         <div>
-          <div className="auth-visual-kicker">ScholaWise · Study Planner</div>
+          <div className="auth-visual-kicker">Scholarwise · Study Planner</div>
           <h2>A study plan you'll actually follow.</h2>
           <p className="auth-visual-sub">
             Tell us your subjects, exam dates and how many hours you have.
@@ -145,7 +145,7 @@ export default function Register() {
           </form>
 
           <p className="auth-alt">
-            Already have a ScholaWise account? <Link to="/login">Log in</Link>
+            Already have a Scholarwise account? <Link to="/login">Log in</Link>
           </p>
         </div>
       </div>

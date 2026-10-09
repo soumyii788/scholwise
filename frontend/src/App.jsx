@@ -25,14 +25,14 @@ function ProtectedLayout({ children }) {
 
 function ProtectedRoute({ children }) {
   const { user, initializing } = useAuth();
-  if (initializing) return <Loading label="Loading ScholaWise..." />;
+  if (initializing) return <Loading label="Loading Scholarwise..." />;
   if (!user) return <Navigate to="/login" replace />;
   return <ProtectedLayout>{children}</ProtectedLayout>;
 }
 
 function PublicRoute({ children }) {
   const { user, initializing } = useAuth();
-  if (initializing) return <Loading label="Loading ScholaWise..." />;
+  if (initializing) return <Loading label="Loading Scholarwise..." />;
   if (user) return <Navigate to="/dashboard" replace />;
   return children;
 }

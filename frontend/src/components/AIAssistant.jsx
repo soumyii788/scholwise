@@ -6,7 +6,7 @@ export default function AIAssistant() {
     {
       role: "assistant",
       content:
-        "Hi! I'm your Scholwise AI assistant. Ask me what to study, how to prepare for an exam, or anything about your study plan.",
+        "Hi! I'm your Scholarwise AI assistant. Ask me what to study, how to prepare for an exam, or anything about your study plan.",
     },
   ]);
 
@@ -66,7 +66,7 @@ export default function AIAssistant() {
     <section className="ai-assistant">
       <div className="ai-assistant-header">
         <div>
-          <h2>🤖 Scholwise AI</h2>
+          <h2>🤖 Scholarwise AI</h2>
           <p>Your personal study assistant</p>
         </div>
       </div>
@@ -93,7 +93,7 @@ export default function AIAssistant() {
           type="text"
           value={input}
           onChange={(event) => setInput(event.target.value)}
-          placeholder="Ask Scholwise AI something..."
+          placeholder="Ask Scholarwise AI something..."
           maxLength={1000}
           disabled={loading}
         />
