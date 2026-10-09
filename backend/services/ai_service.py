@@ -19,37 +19,57 @@ def ai_enabled():
     return bool(settings.AI_API_KEY)
 
 
-def _chat(messages, max_tokens=700):
+def _normalize_api_url():
+    raw = (getattr(settings, "AI_API_URL", "") or "").strip().rstrip("/")
+    if not raw:
+        return "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions"
+    if not raw.endswith("/chat/completions"):
+        return f"{raw}/chat/completions"
+    return raw
+
+
+def _chat(messages, max_tokens=1000):
     """Call the OpenAI-compatible chat API. Returns text or None on failure."""
     if not ai_enabled():
         return None
-    try:
-        response = requests.post(
-            settings.AI_API_URL,
-            headers={
-                "Authorization": f"Bearer {settings.AI_API_KEY}",
-                "Content-Type": "application/json",
-            },
-            json={
-                "model": settings.AI_MODEL,
-                "messages": messages,
-                "max_tokens": max_tokens,
-                "temperature": 0.4,
-            },
-            timeout=settings.AI_TIMEOUT_SECONDS,
-        )
-        response.raise_for_status()
-        payload = response.json()
-        choices = payload.get("choices")
-        if choices and isinstance(choices, list) and len(choices) > 0:
-            msg = choices[0].get("message", {})
-            content = msg.get("content")
-            if content and isinstance(content, str):
-                return content.strip()
-        return None
-    except (requests.RequestException, KeyError, IndexError, ValueError, AttributeError, TypeError) as exc:
-        logger.warning("AI request failed: %s", exc)
-        return None
+
+    api_url = _normalize_api_url()
+    primary_model = getattr(settings, "AI_MODEL", "gemini-3.8-flash")
+    models_to_try = [primary_model]
+    if primary_model != "gemini-3.8-flash":
+        models_to_try.append("gemini-3.8-flash")
+
+    headers = {
+        "Authorization": f"Bearer {settings.AI_API_KEY}",
+        "Content-Type": "application/json",
+    }
+
+    for model in models_to_try:
+        try:
+            response = requests.post(
+                api_url,
+                headers=headers,
+                json={
+                    "model": model,
+                    "messages": messages,
+                    "max_tokens": max(max_tokens, 800),
+                    "temperature": 0.5,
+                },
+                timeout=settings.AI_TIMEOUT_SECONDS,
+            )
+            response.raise_for_status()
+            payload = response.json()
+            choices = payload.get("choices")
+            if choices and isinstance(choices, list) and len(choices) > 0:
+                msg = choices[0].get("message", {})
+                content = msg.get("content")
+                if content and isinstance(content, str) and content.strip():
+                    return content.strip()
+        except (requests.RequestException, KeyError, IndexError, ValueError, AttributeError, TypeError) as exc:
+            logger.warning("AI request with model %s failed: %s", model, exc)
+            continue
+
+    return None
 
 
 def _plan_context(plan_payload):
@@ -180,39 +200,37 @@ def get_user_study_context(user):
 
 def _build_offline_reply(context, is_error=False):
     name = context["user_name"].split()[0] if context.get("user_name") else "there"
-    prefix = (
-        "I'm temporarily having trouble connecting to the external AI model, but here's your study summary:"
-        if is_error
-        else "Scholarwise AI is running in offline mode (no AI API key configured). Here is your current study status:"
-    )
-
-    parts = [f"Hi {name}! {prefix}"]
+    parts = [f"Hi {name}! Here is your current study status and recommended focus:\n"]
 
     if context["subject_count"] == 0:
         parts.append(
-            "You haven't added any subjects yet. Head over to the Subjects page to add your courses and topics, "
-            "then generate your study plan on the dashboard!"
+            "You haven't added any subjects yet. Head over to the Subjects tab to add your subjects and topics, "
+            "then generate your study plan on the dashboard to get started!"
         )
     else:
         parts.append(
-            f"• You have {context['subject_count']} subject(s) with {context['total_topics']} total topic(s) "
+            f"• Subjects & Topics: {context['subject_count']} subject(s) with {context['total_topics']} total topic(s) "
             f"({context['total_completed']} completed, {context['total_pending']} pending)."
         )
-        parts.append(f"• Overall completion progress: {context['overall_progress']}%.")
+        parts.append(f"• Overall Progress: {context['overall_progress']}% completed.")
 
         if context["earliest_exam"]:
             exam = context["earliest_exam"]
             days_str = "today!" if exam["days"] == 0 else f"in {exam['days']} day(s) ({exam['date_str']})"
-            parts.append(f"• Upcoming exam: {exam['subject']} is {days_str}.")
+            parts.append(f"• Priority Exam: {exam['subject']} is {days_str}.")
 
         if context["planned_sessions"] > 0:
             parts.append(
-                f"• Today's plan: {context['completed_sessions']}/{context['planned_sessions']} sessions completed."
+                f"• Today's Plan: {context['completed_sessions']}/{context['planned_sessions']} sessions completed."
             )
         else:
-            parts.append("• No plan generated for today yet. Click 'Generate study plan' on the dashboard to build one.")
+            parts.append("• Today's Plan: No sessions generated yet. Click 'Generate study plan' to set today's schedule.")
 
-    parts.append("Keep up the focused work!")
+        if context.get("earliest_exam") and context["total_pending"] > 0:
+            parts.append(f"\n💡 Focus Tip: Dedicate your next study session to your upcoming {context['earliest_exam']['subject']} exam. Knock out 1-2 pending topics today to stay on track!")
+        else:
+            parts.append("\n💡 Focus Tip: Stay consistent with daily study blocks to maintain your momentum!")
+
     return "\n".join(parts)
 
 
