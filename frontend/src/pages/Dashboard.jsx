@@ -11,6 +11,7 @@ import Loading from "../components/Loading.jsx";
 import ProgressBar from "../components/ProgressBar.jsx";
 import StudySessionRow from "../components/StudySession.jsx";
 import SmartInsights from "../components/SmartInsights.jsx";
+import AIAssistant from "../components/AIAssistant.jsx";
 import { firstName, formatDuration, daysLeftLabel, urgencyBadgeClass } from "../utils/helpers.js";
 
 function todayLabel() {
@@ -110,11 +111,12 @@ export default function Dashboard() {
     try {
       const updated = await sessionsApi.setStatus(session.id, nextStatus);
       setPlan((current) => current.map((s) => (s.id === updated.id ? updated : s)));
-      setStats(await authApi.dashboardStats());
-      if (nextStatus === "completed") {
-        const planData = await planApi.today();
-        setSummary(planData.summary);
-      }
+      const [statsData, planData] = await Promise.all([
+        authApi.dashboardStats(),
+        planApi.today(),
+      ]);
+      setStats(statsData);
+      setSummary(planData.summary);
     } catch (err) {
       notify("error", getErrorMessage(err, "Could not update the session."));
     }
@@ -223,7 +225,7 @@ export default function Dashboard() {
             </div>
             <small style={{ color: "var(--text-muted)" }}>Based on your subjects &amp; topics</small>
           </div>
-          <SmartInsights />
+          <SmartInsights refreshKey={`${stats?.overall_progress}-${stats?.today_minutes}-${plan?.length || 0}`} />
         </div>
       </div>
 
@@ -324,6 +326,11 @@ export default function Dashboard() {
             </div>
           )}
         </div>
+      </div>
+
+      {/* ── AI Assistant ── */}
+      <div className="section">
+        <AIAssistant />
       </div>
 
       {/* ── Upcoming Exams ── */}

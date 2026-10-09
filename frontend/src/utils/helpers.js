@@ -21,6 +21,7 @@ export function greetingForHour(hour = new Date().getHours()) {
 
 export function daysLeftLabel(days) {
   if (days === null || days === undefined) return "No exam date";
+  if (days < 0) return "Exam passed";
   if (days === 0) return "Exam today!";
   if (days === 1) return "Tomorrow";
   return `${days} days`;

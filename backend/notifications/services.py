@@ -45,9 +45,11 @@ class NotificationService:
     @staticmethod
     def notify_exam_alerts(user, subjects):
         """Create a reminder for exams that are 3 or fewer days away."""
-        from common.utils import days_until
+        import common.utils as common
 
         for subject in subjects:
+            if not subject.exam_date or subject.exam_date.date() < common.today().date():
+                continue
             days = subject.days_until_exam()
             if days is not None and days <= 3:
                 when = "today" if days == 0 else f"in {days} day{'s' if days != 1 else ''}"

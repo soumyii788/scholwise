@@ -22,7 +22,7 @@ class ProgressView(APIView):
                     "total_topics": total_topics,
                     "completed": completed,
                     "pending": total_topics - completed,
-                    "overall_progress": ProgressService.overall_progress(request.user.id),
+                    "overall_progress": ProgressService.overall_progress(str(request.user.id)),
                 },
             }
         )

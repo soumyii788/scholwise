@@ -114,7 +114,9 @@ def build_daily_plan(user, date_str=None):
     # --- Score and order topics -------------------------------------------------
     scored = []
     for topic in pending:
-        subject = subjects[topic.subject_id]
+        subject = subjects.get(topic.subject_id)
+        if not subject:
+            continue
         breakdown = priority.score_topic(topic, subject)
         scored.append({"topic": topic, "subject": subject, **breakdown})
     scored.sort(key=lambda item: item["score"], reverse=True)
@@ -234,8 +236,11 @@ def _maybe_add_revision(laid_out, available_minutes, subjects, scored):
 
 
 def _parse_clock(value):
-    hours, minutes = str(value).split(":")[:2]
-    return int(hours) * 60 + int(minutes)
+    try:
+        hours, minutes = str(value).strip().split(":")[:2]
+        return int(hours) * 60 + int(minutes)
+    except (ValueError, TypeError, AttributeError):
+        return 18 * 60
 
 
 def persist_plan(user, sessions, meta, replace_existing=True):

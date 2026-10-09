@@ -34,7 +34,7 @@ export default function Login() {
     <div className="auth-page">
       <aside className="auth-visual">
         <div>
-          <div className="auth-visual-kicker">ScholaWise · Study Planner</div>
+          <div className="auth-visual-kicker">Scholarwise · Study Planner</div>
           <h2>What should I study today?</h2>
           <p className="auth-visual-sub">
             Your day, planned around exam urgency, how prepared you really
@@ -114,7 +114,7 @@ export default function Login() {
           </form>
 
           <p className="auth-alt">
-            New to ScholaWise? <Link to="/register">Create an account</Link>
+            New to Scholarwise? <Link to="/register">Create an account</Link>
           </p>
         </div>
       </div>

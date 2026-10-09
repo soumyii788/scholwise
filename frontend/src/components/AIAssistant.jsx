@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { aiAssistantApi, getErrorMessage } from "../services/api.js";
 
 export default function AIAssistant() {
@@ -6,12 +6,19 @@ export default function AIAssistant() {
     {
       role: "assistant",
       content:
-        "Hi! I'm your Scholwise AI assistant. Ask me what to study, how to prepare for an exam, or anything about your study plan.",
+        "Hi! I'm your Scholarwise AI assistant. Ask me what to study, how to prepare for an exam, or anything about your study plan.",
     },
   ]);
 
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const chatRef = useRef(null);
+
+  useEffect(() => {
+    if (chatRef.current) {
+      chatRef.current.scrollTop = chatRef.current.scrollHeight;
+    }
+  }, [messages, loading]);
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -66,12 +73,12 @@ export default function AIAssistant() {
     <section className="ai-assistant">
       <div className="ai-assistant-header">
         <div>
-          <h2>🤖 Scholwise AI</h2>
+          <h2>🤖 Scholarwise AI</h2>
           <p>Your personal study assistant</p>
         </div>
       </div>
 
-      <div className="ai-chat">
+      <div className="ai-chat" ref={chatRef}>
         {messages.map((message, index) => (
           <div
             key={index}
@@ -93,7 +100,7 @@ export default function AIAssistant() {
           type="text"
           value={input}
           onChange={(event) => setInput(event.target.value)}
-          placeholder="Ask Scholwise AI something..."
+          placeholder="Ask Scholarwise AI something..."
           maxLength={1000}
           disabled={loading}
         />

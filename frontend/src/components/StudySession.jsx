@@ -36,18 +36,15 @@ export default function StudySession({ session, onToggle }) {
 
       <span className="session-meta">
         <span className="duration-pill">{formatDuration(session.duration)}</span>
-        {isRevision ? (
-          <span className="revision-pill">Revision</span>
-        ) : (
-          <label className="checkbox" style={{ cursor: "pointer" }}>
-            <input
-              type="checkbox"
-              checked={isCompleted}
-              onChange={() => onToggle?.(session)}
-            />
-            Done
-          </label>
-        )}
+        {isRevision && <span className="revision-pill">Revision</span>}
+        <label className="checkbox" style={{ cursor: "pointer" }}>
+          <input
+            type="checkbox"
+            checked={isCompleted}
+            onChange={() => onToggle?.(session)}
+          />
+          Done
+        </label>
       </span>
     </div>
   );

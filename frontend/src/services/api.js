@@ -22,6 +22,19 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error?.response?.status === 401) {
+      setToken(null);
+      if (typeof window !== "undefined" && window.location.pathname !== "/login" && window.location.pathname !== "/register") {
+        window.location.href = "/login";
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
 // Extract the friendliest message a backend response offers.
 export function getErrorMessage(error, fallback = "Something went wrong. Please try again.") {
   if (error?.response?.data) {
@@ -33,7 +46,7 @@ export function getErrorMessage(error, fallback = "Something went wrong. Please 
     }
   }
   if (error?.message === "Network Error") {
-    return "Cannot reach the ScholaWise server. Is the backend running?";
+    return "Cannot reach the Scholarwise server. Is the backend running?";
   }
   return fallback;
 }

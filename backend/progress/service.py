@@ -40,7 +40,7 @@ class ProgressService:
                     "completed": completed,
                     "in_progress": in_progress,
                     "pending": len(topics) - completed,
-                    "progress_percentage": ProgressService.subject_progress(subject.id),
+                    "progress_percentage": round(100 * completed / len(topics)) if topics else 0,
                 }
             )
         return summary
