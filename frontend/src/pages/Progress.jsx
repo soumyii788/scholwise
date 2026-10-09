@@ -37,17 +37,17 @@ export default function Progress() {
 
       <div className="card">
         <h2>Overall</h2>
-        <ProgressBar value={data.totals.overall_progress} />
+        <ProgressBar value={data?.totals?.overall_progress ?? 0} />
         <div className="plan-summary">
-          <span>Subjects <strong>{data.totals.subjects}</strong></span>
-          <span>Topics <strong>{data.totals.total_topics}</strong></span>
-          <span>Completed <strong>{data.totals.completed}</strong></span>
-          <span>Pending <strong>{data.totals.pending}</strong></span>
+          <span>Subjects <strong>{data?.totals?.subjects ?? 0}</strong></span>
+          <span>Topics <strong>{data?.totals?.total_topics ?? 0}</strong></span>
+          <span>Completed <strong>{data?.totals?.completed ?? 0}</strong></span>
+          <span>Pending <strong>{data?.totals?.pending ?? 0}</strong></span>
         </div>
       </div>
 
       <div className="section progress-list">
-        {data.subjects.length === 0 ? (
+        {(data?.subjects || []).length === 0 ? (
           <div className="card empty-state">
             <h2>Nothing to track yet</h2>
             <p>Add subjects and topics to start tracking your preparation.</p>

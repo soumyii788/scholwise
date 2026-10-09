@@ -7,7 +7,7 @@ import { authApi } from "../services/api.js";
  * Fetches from /api/dashboard/insights/ which uses real subject/topic data
  * + the existing priority engine. AI tip appears only when AI_API_KEY is set.
  */
-export default function SmartInsights() {
+export default function SmartInsights({ refreshKey }) {
   const [data, setData] = useState(null);   // null = loading
   const [error, setError] = useState(null);
 
@@ -15,10 +15,19 @@ export default function SmartInsights() {
     let cancelled = false;
     authApi
       .smartInsights()
-      .then((d) => { if (!cancelled) setData(d); })
-      .catch(() => { if (!cancelled) setError(true); });
-    return () => { cancelled = true; };
-  }, []);
+      .then((d) => {
+        if (!cancelled) {
+          setData(d);
+          setError(false);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setError(true);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [refreshKey]);
 
   // ── Loading skeleton ──────────────────────────────────────────────────
   if (data === null && !error) {

@@ -209,3 +209,22 @@ class PlanSuggestionsView(APIView):
             )
 
         return Response({"ai_available": True, "suggestions": suggestions})
+
+
+class AIAssistantChatView(APIView):
+    """Interactive AI study assistant chat endpoint.
+
+    Uses configured AI service with the student's study context (subjects,
+    topics, upcoming exams, today's schedule, progress).
+    Degrades gracefully when AI is not configured or fails.
+    """
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        message = (request.data.get("message") or request.data.get("content") or "").strip()
+        if not message:
+            raise ValidationError("Please provide a message for the study assistant.")
+
+        reply_data = ai_service.chat_with_assistant(request.user, message)
+        return Response(reply_data)

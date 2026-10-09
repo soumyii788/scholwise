@@ -101,3 +101,53 @@ class FullUserFlowTests(StudyFlowTestCase):
                 self.assertEqual(response.status_code, 200)
                 self.assertFalse(response.data["ai_available"])
                 self.assertIn("detail", response.data)
+
+    def test_ai_assistant_chat_without_key(self):
+        client, _ = self.register_and_login(email="chat_offline@example.com")
+        subject = self.make_subject(client, name="Operating Systems")
+        self.make_topic(client, subject["id"], name="Threads")
+
+        with patch("services.ai_service.ai_enabled", return_value=False):
+            response = client.post(
+                "/api/ai-assistant/chat/",
+                {"message": "What should I study next?"},
+                format="json",
+            )
+            self.assertEqual(response.status_code, 200)
+            self.assertFalse(response.data["ai_available"])
+            self.assertIn("reply", response.data)
+            self.assertIn("Operating Systems", response.data["reply"])
+
+    def test_ai_assistant_chat_with_mocked_ai(self):
+        client, _ = self.register_and_login(email="chat_online@example.com")
+        subject = self.make_subject(client, name="Algorithms")
+        self.make_topic(client, subject["id"], name="Graph Traversal")
+
+        with patch("services.ai_service.ai_enabled", return_value=True), \
+             patch("services.ai_service._chat", return_value="Focus on DFS and BFS first."):
+            response = client.post(
+                "/api/ai-assistant/chat/",
+                {"message": "Give me a recommendation."},
+                format="json",
+            )
+            self.assertEqual(response.status_code, 200)
+            self.assertTrue(response.data["ai_available"])
+            self.assertEqual(response.data["reply"], "Focus on DFS and BFS first.")
+
+    def test_ai_assistant_chat_handles_failure_gracefully(self):
+        client, _ = self.register_and_login(email="chat_fail@example.com")
+        with patch("services.ai_service.ai_enabled", return_value=True), \
+             patch("services.ai_service._chat", return_value=None):
+            response = client.post(
+                "/api/ai-assistant/chat/",
+                {"message": "Can you help me?"},
+                format="json",
+            )
+            self.assertEqual(response.status_code, 200)
+            self.assertFalse(response.data["ai_available"])
+            self.assertIn("reply", response.data)
+
+    def test_ai_assistant_chat_empty_message_validation(self):
+        client, _ = self.register_and_login(email="chat_empty@example.com")
+        response = client.post("/api/ai-assistant/chat/", {"message": "   "}, format="json")
+        self.assertEqual(response.status_code, 400)

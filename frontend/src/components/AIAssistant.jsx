@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { aiAssistantApi, getErrorMessage } from "../services/api.js";
 
 export default function AIAssistant() {
@@ -12,6 +12,13 @@ export default function AIAssistant() {
 
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const chatRef = useRef(null);
+
+  useEffect(() => {
+    if (chatRef.current) {
+      chatRef.current.scrollTop = chatRef.current.scrollHeight;
+    }
+  }, [messages, loading]);
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -71,7 +78,7 @@ export default function AIAssistant() {
         </div>
       </div>
 
-      <div className="ai-chat">
+      <div className="ai-chat" ref={chatRef}>
         {messages.map((message, index) => (
           <div
             key={index}

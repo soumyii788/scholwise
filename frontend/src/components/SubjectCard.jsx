@@ -1,6 +1,7 @@
 import { useState } from "react";
 import ProgressBar from "./ProgressBar.jsx";
 import { daysLeftLabel, urgencyBadgeClass, formatDuration } from "../utils/helpers.js";
+import { getErrorMessage } from "../services/api.js";
 
 // Rotating subject markers for visual variety
 const MARKERS = ["●", "◆", "■", "◇", "▲", "○"];
@@ -44,7 +45,7 @@ export default function SubjectCard({
       });
       setTopicForm({ name: "", estimated_minutes: 45, difficulty: "Medium" });
     } catch (error) {
-      setTopicError(error.friendlyMessage || "Could not add the topic.");
+      setTopicError(getErrorMessage(error, "Could not add the topic."));
     }
   }
 

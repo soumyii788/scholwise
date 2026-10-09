@@ -111,7 +111,11 @@ class DashboardStatsView(APIView):
         pending = len(topics) - completed
 
         upcoming_exams = [
-            s for s in subjects if s.exam_date and common.days_until(s.exam_date) <= 30
+            s
+            for s in subjects
+            if s.exam_date
+            and s.exam_date.date() >= common.today().date()
+            and common.days_until(s.exam_date) <= 30
         ]
         upcoming_exams.sort(key=lambda s: s.exam_date)
 
