@@ -79,7 +79,7 @@ export default function Login() {
 
       <div className="auth-side">
         <div className="auth-card">
-          <h1><span className="brand-mark">SW</span> ScholaWise</h1>
+          <h1><span className="brand-mark">SW</span> Scholarwise</h1>
           <p className="auth-sub">Welcome back! Log in to see today's study plan.</p>
 
           {error && <div className="form-banner error">{error}</div>}

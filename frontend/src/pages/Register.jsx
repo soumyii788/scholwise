@@ -90,7 +90,7 @@ export default function Register() {
 
       <div className="auth-side">
         <div className="auth-card">
-          <h1><span className="brand-mark">SW</span> ScholaWise</h1>
+          <h1><span className="brand-mark">SW</span> Scholarwise</h1>
           <p className="auth-sub">Create your account and never cram the night before again.</p>
 
           {error && <div className="form-banner error">{error}</div>}
