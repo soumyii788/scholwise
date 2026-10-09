@@ -76,7 +76,7 @@ body::before {
   inset: 0;
   z-index: -1;
   background-image:
-    linear-gradient(135deg, rgba(246, 248, 252, 0.76) 0%, rgba(238, 242, 248, 0.84) 100%),
+    linear-gradient(135deg, rgba(246, 248, 252, 0.52) 0%, rgba(238, 242, 248, 0.60) 100%),
     url('/study-bg.jpg');
   background-size: cover;
   background-position: center center;
