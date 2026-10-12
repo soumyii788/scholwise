@@ -48,11 +48,11 @@ export default function RetroStudyHero({
           {/* Floating Vibe Badge */}
           <div className="retro-action-overlay">
             <div className="retro-surf-pill">
-              <span className="retro-wave-icon">🌊</span>
-              <span>IN THE FLOW</span>
+              <span className="retro-wave-icon">✨</span>
+              <span>EVENING FLOW · 07:35</span>
             </div>
             <div className="retro-action-caption">
-              High-focus exam mastery
+              Cozy high-focus study desk
             </div>
           </div>
         </div>

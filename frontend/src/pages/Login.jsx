@@ -50,8 +50,8 @@ export default function Login() {
             <span className="spray-drop drop-4" />
           </div>
           <div className="retro-surf-pill">
-            <span>🌊</span>
-            <span>RIDE THE WAVE</span>
+            <span>✨</span>
+            <span>COZY STUDY FLOW</span>
           </div>
         </div>
 
