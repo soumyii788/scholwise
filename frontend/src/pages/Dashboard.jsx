@@ -12,6 +12,7 @@ import ProgressBar from "../components/ProgressBar.jsx";
 import StudySessionRow from "../components/StudySession.jsx";
 import SmartInsights from "../components/SmartInsights.jsx";
 import AIAssistant from "../components/AIAssistant.jsx";
+import RetroStudyHero from "../components/RetroStudyHero.jsx";
 import { firstName, formatDuration, daysLeftLabel, urgencyBadgeClass } from "../utils/helpers.js";
 
 function todayLabel() {
@@ -139,19 +140,16 @@ export default function Dashboard() {
     : null;
 
   return (
-    <div>
-      {/* ── Greeting ── */}
-      <div className="dash-greeting">
-        <div className="dash-date">{todayLabel()}</div>
-        <h1>Hey, {firstName(user?.name)}.</h1>
-        <p style={{ color: "var(--text-soft)", marginTop: 4, fontSize: "0.9rem" }}>
-          {summary?.planned
-            ? completedSessions === totalSessions && totalSessions > 0
-              ? "All sessions done. Well studied."
-              : "Let's get something done."
-            : "No plan yet. Generate one below."}
-        </p>
-      </div>
+    <div className="dashboard-content">
+      {/* ── Retro Study Portal Hero Banner ── */}
+      <RetroStudyHero
+        user={user}
+        stats={stats}
+        summary={summary}
+        plan={plan}
+        generating={generating}
+        onGenerate={handleGenerate}
+      />
 
       {banner && <div className={`form-banner ${banner.kind}`}>{banner.text}</div>}
 
@@ -230,7 +228,7 @@ export default function Dashboard() {
       </div>
 
       {/* ── Today's Study Plan ── */}
-      <div className="section">
+      <div className="section" id="sessions-section">
         <div className="card">
           <div className="section-head" style={{ marginBottom: 12 }}>
             <div>
