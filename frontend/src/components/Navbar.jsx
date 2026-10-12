@@ -84,17 +84,20 @@ export default function Navbar() {
   return (
     <header className="navbar">
       <Link to="/dashboard" className="navbar-brand">
-        <span className="brand-mark">SW</span>
-        Scholarwise
+        <div className="retro-nav-tag" title="Scholarwise Study Portal">
+          <span className="retro-nav-tag-stitch" />
+          <span className="retro-nav-tag-text">SW</span>
+        </div>
+        <span className="navbar-brand-name">Scholarwise</span>
       </Link>
 
       <div className="navbar-actions">
         {/* Bell */}
         <div className="notif-wrap" ref={bellRef}>
           <button
-            className="icon-button"
+            className={`icon-button ${unread > 0 ? "has-unread" : ""}`}
             aria-label="Notifications"
-            title="Notifications"
+            title={unread > 0 ? `${unread} unread notifications` : "Notifications"}
             onClick={() => {
               setOpen((v) => !v);
               if (!open) loadNotifications();
