@@ -834,11 +834,11 @@ label strong { color: var(--text); }
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(135deg, rgba(2, 132, 199, 0.25) 0%, rgba(216, 34, 42, 0.15) 100%),
-    url('/hero-reference.png');
+    linear-gradient(135deg, rgba(236, 72, 153, 0.12) 0%, rgba(216, 34, 42, 0.10) 100%),
+    url('/study-desk-hero.jpg');
   background-size: cover;
-  background-position: left center;
-  filter: contrast(1.06) saturate(1.15);
+  background-position: center center;
+  filter: contrast(1.05) saturate(1.12);
   transform: scale(1.02);
   transition: transform 0.8s ease;
 }
@@ -1043,11 +1043,11 @@ label strong { color: var(--text); }
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(135deg, rgba(2, 132, 199, 0.28) 0%, rgba(216, 34, 42, 0.2) 100%),
-    url('/hero-reference.png');
+    linear-gradient(135deg, rgba(236, 72, 153, 0.15) 0%, rgba(216, 34, 42, 0.12) 100%),
+    url('/study-desk-hero.jpg');
   background-size: cover;
-  background-position: left center;
-  filter: contrast(1.08) saturate(1.2);
+  background-position: center center;
+  filter: contrast(1.05) saturate(1.15);
 }
 .auth-action-visual .retro-surf-pill {
   position: absolute;
