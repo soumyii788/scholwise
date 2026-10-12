@@ -28,6 +28,9 @@ jobs:
           echo "environment.yml not found — installing minimal dependencies"
           conda install -y python=3.10 flake8 pytest
         fi
+        if [ -f backend/requirements.txt ]; then
+          pip install -r backend/requirements.txt
+        fi
     - name: Lint with flake8
       run: |
         conda install flake8
@@ -36,6 +39,10 @@ jobs:
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest
+      working-directory: backend
+      env:
+        DJANGO_SETTINGS_MODULE: config.settings
+        PYTHONPATH: ${{ github.workspace }}/backend
       run: |
         conda install pytest
         pytest
