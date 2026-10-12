@@ -61,8 +61,8 @@ export default function Register() {
             <span className="spray-drop drop-4" />
           </div>
           <div className="retro-surf-pill">
-            <span>🏄</span>
-            <span>CATCH THE STUDY WAVE</span>
+            <span>✨</span>
+            <span>DEEP STUDY MODE</span>
           </div>
         </div>
 
