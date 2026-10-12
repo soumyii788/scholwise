@@ -73,7 +73,7 @@
 body {
   margin: 0;
   min-height: 100vh;
-  background-color: var(--bg);
+  background-color: #16131A;
   color: var(--text);
   font-family: var(--font-body);
   font-size: 14.5px;
@@ -88,13 +88,21 @@ body::before {
   inset: 0;
   z-index: -1;
   background-image:
-    radial-gradient(ellipse at 15% 10%, rgba(216, 34, 42, 0.04) 0%, transparent 45%),
-    radial-gradient(ellipse at 85% 80%, rgba(245, 158, 11, 0.05) 0%, transparent 50%),
-    linear-gradient(180deg, #F5EFE6 0%, #EFE7DB 100%);
+    linear-gradient(
+      135deg,
+      rgba(245, 158, 11, 0.12) 0%,
+      rgba(225, 29, 72, 0.16) 38%,
+      rgba(15, 12, 24, 0.54) 100%
+    ),
+    url('/study-desk-hero.jpg');
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  filter: brightness(0.88) saturate(1.25) contrast(1.08);
   pointer-events: none;
 }
 
-::selection { background: rgba(216, 34, 42, 0.16); color: var(--text); }
+::selection { background: rgba(216, 34, 42, 0.25); color: #fff; }
 
 :focus-visible {
   outline: 2px solid var(--primary);
@@ -116,6 +124,36 @@ p  { margin: 0.2em 0; }
 a  { color: var(--primary); text-decoration: none; transition: color 0.15s; }
 a:hover { color: var(--primary-dark); }
 small { color: var(--text-soft); font-size: 0.8rem; }
+
+/* Frosted glass heading styling over study desk background */
+.app-main > div > .section-head h1,
+.app-main > div > h1,
+.app-main h1 {
+  color: #FFFFFF;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.65);
+}
+.app-main .section-head p,
+.app-main > div > p,
+.app-main p[style*="var(--text-soft)"] {
+  color: rgba(255, 255, 255, 0.92) !important;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.65);
+}
+.app-main .section-label {
+  color: rgba(255, 255, 255, 0.82) !important;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.65);
+}
+
+/* Ensure headings and text inside white cards retain deep dark ink text */
+.card h1, .card h2, .card h3, .modal-card h1, .modal-card h2, .modal-card h3 {
+  color: var(--text) !important;
+  text-shadow: none !important;
+}
+.card p, .modal-card p {
+  text-shadow: none !important;
+}
+.card small, .modal-card small {
+  text-shadow: none !important;
+}
 
 /* ===== Layout ===== */
 .app-shell { min-height: 100vh; display: flex; flex-direction: column; background: transparent; }
