@@ -100,8 +100,6 @@ export const aiAssistantApi = {
 export const sessionsApi = {
   setStatus: (id, status) =>
     api.put(`/sessions/${id}/status/`, { status }).then((r) => r.data.session),
-  record: (payload) =>
-    api.post("/sessions/record/", payload).then((r) => r.data),
 };
 
 export const progressApi = {
