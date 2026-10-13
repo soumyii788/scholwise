@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { firstName, formatDuration } from "../utils/helpers.js";
 
 export default function RetroStudyHero({
@@ -132,6 +133,9 @@ export default function RetroStudyHero({
                 </>
               )}
             </button>
+            <Link to="/focus" className="button retro-btn-outline">
+              <span>⏱️</span> Enter Focus Mode
+            </Link>
             <a href="#sessions-section" className="button retro-btn-outline">
               View Sessions ↓
             </a>
