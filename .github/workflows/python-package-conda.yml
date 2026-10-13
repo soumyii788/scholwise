@@ -1,51 +1,50 @@
+```yaml
 name: Python Package using Conda
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
   build-linux:
     runs-on: ubuntu-latest
-    strategy:
-      max-parallel: 5
 
     steps:
-    - uses: actions/checkout@v4
-      with:
-        submodules: false
-    - name: Set up Python 3.10
-      uses: actions/setup-python@v3
-      with:
-        python-version: '3.10'
-    - name: Add conda to system path
-      run: |
-        # $CONDA is an environment variable pointing to the root of the miniconda directory
-        echo $CONDA/bin >> $GITHUB_PATH
-    - name: Install dependencies
-      run: |
-        if [ -f environment.yml ]; then
-          conda env update --file environment.yml --name base
-        else
-          echo "environment.yml not found — installing minimal dependencies"
-          conda install -y python=3.10 flake8 pytest
-        fi
-        if [ -f backend/requirements.txt ]; then
-          pip install -r backend/requirements.txt
-        fi
-    - name: Lint with flake8
-      run: |
-        conda install flake8
-        # stop the build if there are Python syntax errors or undefined names
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    - name: Install test dependencies
-      run: |
-        pip install -r backend/requirements-dev.txt
-    - name: Test with pytest
-      working-directory: backend
-      env:
-        DJANGO_SETTINGS_MODULE: config.settings
-        PYTHONPATH: ${{ github.workspace }}/backend
-      run: |
-        conda install pytest
-        pytest
+      - uses: actions/checkout@v4
+        with:
+          submodules: false
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Add conda to system path
+        run: echo "$CONDA/bin" >> "$GITHUB_PATH"
+
+      - name: Install dependencies
+        run: |
+          if [ -f environment.yml ]; then
+            conda env update --file environment.yml --name base
+          else
+            conda install -y python=3.10 pip pytest flake8
+          fi
+
+          if [ -f backend/requirements.txt ]; then
+            pip install -r backend/requirements.txt
+          fi
+
+          if [ -f backend/requirements-dev.txt ]; then
+            pip install -r backend/requirements-dev.txt
+          fi
+
+      - name: Lint with flake8
+        run: |
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+      - name: Test with pytest
+        working-directory: backend
+        env:
+          DJANGO_SETTINGS_MODULE: config.settings
+          PYTHONPATH: ${{ github.workspace }}/backend
+        run: pytest
+```
