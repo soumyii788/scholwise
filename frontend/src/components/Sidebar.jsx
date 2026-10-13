@@ -34,15 +34,6 @@ function ProgressIcon() {
     </svg>
   );
 }
-function FocusIcon() {
-  return (
-    <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
-      <circle cx="7.5" cy="7.5" r="5.5" stroke="currentColor" strokeWidth="1.2" fill="none"/>
-      <path d="M7.5 4.5V7.5L9.5 9.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
-      <path d="M5.5 1.5H9.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
-    </svg>
-  );
-}
 function SettingsIcon() {
   return (
     <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
@@ -53,12 +44,11 @@ function SettingsIcon() {
 }
 
 const navLinks = [
-  { to: "/dashboard", label: "Home",       Icon: HomeIcon },
-  { to: "/focus",     label: "Focus Mode", Icon: FocusIcon },
-  { to: "/subjects",  label: "Subjects",   Icon: SubjectsIcon },
-  { to: "/calendar",  label: "Schedule",   Icon: CalendarIcon },
-  { to: "/progress",  label: "Progress",   Icon: ProgressIcon },
-  { to: "/profile",   label: "Settings",   Icon: SettingsIcon },
+  { to: "/dashboard", label: "Home",     Icon: HomeIcon },
+  { to: "/subjects",  label: "Subjects", Icon: SubjectsIcon },
+  { to: "/calendar",  label: "Schedule", Icon: CalendarIcon },
+  { to: "/progress",  label: "Progress", Icon: ProgressIcon },
+  { to: "/profile",   label: "Settings", Icon: SettingsIcon },
 ];
 
 export default function Sidebar() {

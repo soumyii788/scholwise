@@ -1,22 +1,18 @@
-```yaml
 name: base
 channels:
   - conda-forge
-
 dependencies:
   - python=3.10
   - pip
   - flake8
   - pytest
   - pip:
-      - "Django>=4.2,<5.0"
-      - "djangorestframework>=3.15,<3.16"
-      - "mongoengine>=0.28,<0.30"
-      - "pymongo>=4.6,<4.7"
-      - "dnspython>=2.6"
-      - "PyJWT>=2.9"
-      - "python-dotenv>=1.0"
-      - "django-cors-headers>=4.4"
-      - "requests>=2.31"
-      - "mongomock>=4.1"
-```
+    - Django>=4.2,<5.0
+    - djangorestframework>=3.15,<3.16
+    - mongoengine>=0.28,<0.30
+    - pymongo>=4.6,<4.7
+    - dnspython>=2.6
+    - PyJWT>=2.9
+    - python-dotenv>=1.0
+    - django-cors-headers>=4.4
+    - requests>=2.31
