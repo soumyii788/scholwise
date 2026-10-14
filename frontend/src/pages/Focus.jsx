@@ -2,163 +2,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 import { subjectsApi, sessionsApi, getErrorMessage } from "../services/api.js";
+import { audioService } from "../services/audioService.js";
+import AudioController from "../components/AudioController.jsx";
 import { firstName, formatDuration } from "../utils/helpers.js";
-
-// Web Audio API Sound Generator (zero external assets needed)
-class SoundManager {
-  constructor() {
-    this.ctx = null;
-    this.ambientSource = null;
-    this.ambientGain = null;
-    this.currentAmbientType = null;
-  }
-
-  init() {
-    if (!this.ctx) {
-      const AudioContext = window.AudioContext || window.webkitAudioContext;
-      if (AudioContext) {
-        this.ctx = new AudioContext();
-      }
-    }
-    if (this.ctx && this.ctx.state === "suspended") {
-      this.ctx.resume();
-    }
-  }
-
-  playChime() {
-    try {
-      this.init();
-      if (!this.ctx) return;
-      const now = this.ctx.currentTime;
-
-      // Two harmonic chime frequencies (D5 and A5)
-      const freqs = [587.33, 880.0];
-      freqs.forEach((freq, i) => {
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-
-        osc.type = "sine";
-        osc.frequency.setValueAtTime(freq, now + i * 0.08);
-
-        gain.gain.setValueAtTime(0, now + i * 0.08);
-        gain.gain.linearRampToValueAtTime(0.28, now + i * 0.08 + 0.04);
-        gain.gain.exponentialRampToValueAtTime(0.0001, now + i * 0.08 + 2.2);
-
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-
-        osc.start(now + i * 0.08);
-        osc.stop(now + i * 0.08 + 2.3);
-      });
-    } catch {
-      // Audio playback fails gracefully if muted by user gesture rules
-    }
-  }
-
-  playClick() {
-    try {
-      this.init();
-      if (!this.ctx) return;
-      const now = this.ctx.currentTime;
-      const osc = this.ctx.createOscillator();
-      const gain = this.ctx.createGain();
-
-      osc.type = "sine";
-      osc.frequency.setValueAtTime(800, now);
-      osc.frequency.exponentialRampToValueAtTime(300, now + 0.04);
-
-      gain.gain.setValueAtTime(0.12, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
-
-      osc.connect(gain);
-      gain.connect(this.ctx.destination);
-
-      osc.start(now);
-      osc.stop(now + 0.05);
-    } catch {
-      // ignore
-    }
-  }
-
-  startAmbient(type = "rain", volume = 0.35) {
-    try {
-      this.init();
-      if (!this.ctx) return;
-      this.stopAmbient();
-
-      const bufferSize = this.ctx.sampleRate * 2;
-      const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
-      const data = buffer.getChannelData(0);
-
-      // Generate brown/pink ambient noise
-      let lastOut = 0.0;
-      for (let i = 0; i < bufferSize; i++) {
-        const white = Math.random() * 2 - 1;
-        if (type === "waves") {
-          lastOut = (lastOut + 0.02 * white) / 1.02;
-          data[i] = lastOut * 3.5;
-        } else if (type === "rain") {
-          lastOut = (lastOut + 0.05 * white) / 1.05;
-          data[i] = lastOut * 2.5;
-        } else {
-          // Cafe / White noise
-          data[i] = white * 0.15;
-        }
-      }
-
-      const noise = this.ctx.createBufferSource();
-      noise.buffer = buffer;
-      noise.loop = true;
-
-      const filter = this.ctx.createBiquadFilter();
-      if (type === "rain") {
-        filter.type = "lowpass";
-        filter.frequency.value = 850;
-      } else if (type === "waves") {
-        filter.type = "bandpass";
-        filter.frequency.value = 400;
-        filter.Q.value = 1.0;
-      } else {
-        filter.type = "lowpass";
-        filter.frequency.value = 600;
-      }
-
-      this.ambientGain = this.ctx.createGain();
-      this.ambientGain.gain.setValueAtTime(volume, this.ctx.currentTime);
-
-      noise.connect(filter);
-      filter.connect(this.ambientGain);
-      this.ambientGain.connect(this.ctx.destination);
-
-      noise.start();
-      this.ambientSource = noise;
-      this.currentAmbientType = type;
-    } catch {
-      // Audio playback non-critical
-    }
-  }
-
-  setAmbientVolume(vol) {
-    if (this.ambientGain && this.ctx) {
-      this.ambientGain.gain.setValueAtTime(vol, this.ctx.currentTime);
-    }
-  }
-
-  stopAmbient() {
-    if (this.ambientSource) {
-      try {
-        this.ambientSource.stop();
-        this.ambientSource.disconnect();
-      } catch {
-        // ignore
-      }
-      this.ambientSource = null;
-    }
-    this.currentAmbientType = null;
-  }
-}
-
-const sounds = new SoundManager();
 
 const PRESETS = [
   { id: "focus-25", name: "Pomodoro", minutes: 25, type: "study" },
@@ -197,11 +43,6 @@ export default function Focus() {
 
   // --- Real-time Clock state ---
   const [currentTime, setCurrentTime] = useState(new Date());
-
-  // --- Ambient sound generator state ---
-  const [ambientActive, setAmbientActive] = useState(false);
-  const [ambientTrack, setAmbientTrack] = useState("rain"); // "rain" | "waves" | "cafe"
-  const [ambientVol, setAmbientVol] = useState(0.35);
 
   // --- Zen / Fullscreen mode ---
   const [zenMode, setZenMode] = useState(false);
@@ -293,7 +134,7 @@ export default function Focus() {
             if (prev <= deltaSec) {
               clearInterval(timerIntervalRef.current);
               setTimerRunning(false);
-              if (soundEnabled) sounds.playChime();
+              if (soundEnabled) audioService.playChime();
 
               // Prompt session logging if it was a focus session
               if (preset.type === "study") {
@@ -343,56 +184,31 @@ export default function Focus() {
     };
   }, [stopwatchRunning]);
 
-  // --- Ambient sound effect toggle ---
-  const toggleAmbient = (track = ambientTrack) => {
-    if (ambientActive && ambientTrack === track) {
-      sounds.stopAmbient();
-      setAmbientActive(false);
-    } else {
-      setAmbientTrack(track);
-      sounds.startAmbient(track, ambientVol);
-      setAmbientActive(true);
-    }
-  };
-
-  const handleAmbientVolumeChange = (e) => {
-    const vol = parseFloat(e.target.value);
-    setAmbientVol(vol);
-    sounds.setAmbientVolume(vol);
-  };
-
-  // Teardown sound when leaving page
-  useEffect(() => {
-    return () => {
-      sounds.stopAmbient();
-    };
-  }, []);
-
   // --- Timer Controls ---
   const startTimer = () => {
-    sounds.playClick();
+    audioService.playClick();
     setTimerRunning(true);
   };
 
   const pauseTimer = () => {
-    sounds.playClick();
+    audioService.playClick();
     setTimerRunning(false);
   };
 
   const resetTimer = () => {
-    sounds.playClick();
+    audioService.playClick();
     setTimerRunning(false);
     setTimerSecondsLeft(timerTotalSeconds);
   };
 
   const addFiveMinutes = () => {
-    sounds.playClick();
+    audioService.playClick();
     setTimerSecondsLeft((prev) => prev + 300);
     setTimerTotalSeconds((prev) => prev + 300);
   };
 
   const applyPreset = (p) => {
-    sounds.playClick();
+    audioService.playClick();
     setPreset(p);
     setShowCustomInput(false);
     setTimerRunning(false);
@@ -404,7 +220,7 @@ export default function Focus() {
   const handleCustomApply = () => {
     const mins = parseInt(customMinutes, 10);
     if (!mins || mins <= 0 || mins > 240) return;
-    sounds.playClick();
+    audioService.playClick();
     const custom = { id: "custom", name: `Custom ${mins}m`, minutes: mins, type: "study" };
     setPreset(custom);
     setTimerTotalSeconds(mins * 60);
@@ -415,24 +231,24 @@ export default function Focus() {
 
   // --- Stopwatch Controls ---
   const startStopwatch = () => {
-    sounds.playClick();
+    audioService.playClick();
     setStopwatchRunning(true);
   };
 
   const pauseStopwatch = () => {
-    sounds.playClick();
+    audioService.playClick();
     setStopwatchRunning(false);
   };
 
   const resetStopwatch = () => {
-    sounds.playClick();
+    audioService.playClick();
     setStopwatchRunning(false);
     setStopwatchElapsed(0);
     setLaps([]);
   };
 
   const recordLap = () => {
-    sounds.playClick();
+    audioService.playClick();
     const currentLapTime = laps.length === 0 ? stopwatchElapsed : stopwatchElapsed - laps[0].overall;
     setLaps([{ id: laps.length + 1, lapTime: currentLapTime, overall: stopwatchElapsed }, ...laps]);
   };
@@ -879,68 +695,8 @@ export default function Focus() {
                 </div>
               </div>
 
-              {/* Ambient Sound Box */}
-              <div className="ambient-sound-panel">
-                <div className="ambient-head">
-                  <span className="ambient-title">🎧 Built-in Ambient Study Audio</span>
-                  <span className="ambient-note">Synthesized locally · 100% Offline</span>
-                </div>
-
-                <div className="ambient-tracks-grid">
-                  <button
-                    className={`ambient-track-btn ${ambientActive && ambientTrack === "rain" ? "active" : ""}`}
-                    onClick={() => toggleAmbient("rain")}
-                  >
-                    <span className="track-emoji">🌧️</span>
-                    <div>
-                      <div className="track-name">Gentle Rain</div>
-                      <div className="track-desc">Calming soft drizzle</div>
-                    </div>
-                    <span className="track-state">{ambientActive && ambientTrack === "rain" ? "Playing" : "Play"}</span>
-                  </button>
-
-                  <button
-                    className={`ambient-track-btn ${ambientActive && ambientTrack === "waves" ? "active" : ""}`}
-                    onClick={() => toggleAmbient("waves")}
-                  >
-                    <span className="track-emoji">🌊</span>
-                    <div>
-                      <div className="track-name">Ocean Surf</div>
-                      <div className="track-desc">Rhythmic rolling surf</div>
-                    </div>
-                    <span className="track-state">{ambientActive && ambientTrack === "waves" ? "Playing" : "Play"}</span>
-                  </button>
-
-                  <button
-                    className={`ambient-track-btn ${ambientActive && ambientTrack === "cafe" ? "active" : ""}`}
-                    onClick={() => toggleAmbient("cafe")}
-                  >
-                    <span className="track-emoji">☕</span>
-                    <div>
-                      <div className="track-name">Coffeehouse Hum</div>
-                      <div className="track-desc">Warm brown noise vibe</div>
-                    </div>
-                    <span className="track-state">{ambientActive && ambientTrack === "cafe" ? "Playing" : "Play"}</span>
-                  </button>
-                </div>
-
-                {ambientActive && (
-                  <div className="ambient-volume-row animate-pop">
-                    <span>🔊 Volume</span>
-                    <input
-                      type="range"
-                      min="0.05"
-                      max="0.8"
-                      step="0.05"
-                      value={ambientVol}
-                      onChange={handleAmbientVolumeChange}
-                    />
-                    <button className="button ghost sm" onClick={() => toggleAmbient(ambientTrack)}>
-                      Stop Audio
-                    </button>
-                  </div>
-                )}
-              </div>
+              {/* Sound Lab & Ambient Controls */}
+              <AudioController embedded={true} />
             </div>
           )}
         </div>
