@@ -759,8 +759,7 @@ label strong { color: var(--text); }
 .retro-hanging-tag {
   position: absolute;
   top: 0;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 28px;
   z-index: 30;
   background: var(--retro-red);
   color: #FFFFFF;
@@ -930,57 +929,58 @@ label strong { color: var(--text); }
 .retro-kicker-row {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 12px;
+  gap: 12px;
+  margin-bottom: 14px;
 }
 .retro-badge-date {
-  font-size: 0.68rem;
+  font-family: var(--font-heading);
+  font-size: 0.78rem;
   font-weight: 800;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--text-muted);
+  letter-spacing: 0.04em;
+  color: var(--text-soft);
+  background: #FFFFFF;
+  padding: 5px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  box-shadow: 0 2px 6px rgba(60, 42, 22, 0.06);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-transform: none;
 }
 .retro-pill-status {
   background: var(--primary-soft);
   color: var(--retro-red);
-  font-size: 0.65rem;
+  font-size: 0.7rem;
   font-weight: 800;
   letter-spacing: 0.08em;
-  padding: 2px 8px;
+  padding: 4px 12px;
   border-radius: 999px;
-  border: 1px solid rgba(216, 34, 42, 0.2);
+  border: 1px solid rgba(216, 34, 42, 0.25);
+  box-shadow: 0 2px 6px rgba(216, 34, 42, 0.1);
 }
 
-/* Chunky Bold Red Headline */
-.retro-hero-title {
-  font-family: var(--font-display);
-  color: var(--retro-red);
-  font-size: 2.6rem;
-  line-height: 1.04;
-  letter-spacing: -0.015em;
-  margin: 0 0 12px;
-  display: flex;
-  flex-direction: column;
-  text-shadow: 2px 2px 0px rgba(179, 23, 30, 0.12);
-  animation: retroPop 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-}
-.retro-hero-title .title-line-1 {
-  display: block;
-}
-.retro-hero-title .title-line-2 {
-  display: block;
-}
-
-.retro-hero-subtitle {
-  color: var(--text-soft);
-  font-size: 0.92rem;
-  line-height: 1.5;
-  margin: 0 0 20px;
-  max-width: 48ch;
-}
-.retro-hero-subtitle strong {
+/* Clean, Human Greeting */
+.retro-hero-greeting {
+  font-family: var(--font-heading);
   color: var(--text);
-  font-weight: 700;
+  font-size: 2.15rem;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  margin: 2px 0 8px;
+  animation: retroPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+.retro-hero-greeting .greeting-name {
+  color: var(--retro-red);
+}
+
+.retro-hero-message {
+  color: var(--text-soft);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin: 0 0 22px;
+  max-width: 52ch;
 }
 
 .retro-hero-stats {
@@ -1260,19 +1260,19 @@ label strong { color: var(--text); }
 
 /* ===== Keyframe Animations ===== */
 @keyframes tagSwayIn {
-  0% { transform: translateX(-50%) rotate(-12deg); }
-  25% { transform: translateX(-50%) rotate(9deg); }
-  50% { transform: translateX(-50%) rotate(-5deg); }
-  75% { transform: translateX(-50%) rotate(2.5deg); }
-  100% { transform: translateX(-50%) rotate(0deg); }
+  0% { transform: rotate(-12deg); }
+  25% { transform: rotate(9deg); }
+  50% { transform: rotate(-5deg); }
+  75% { transform: rotate(2.5deg); }
+  100% { transform: rotate(0deg); }
 }
 
 @keyframes tagSwayLoop {
-  0% { transform: translateX(-50%) rotate(0deg); }
-  25% { transform: translateX(-50%) rotate(3.5deg); }
-  50% { transform: translateX(-50%) rotate(0deg); }
-  75% { transform: translateX(-50%) rotate(-3.5deg); }
-  100% { transform: translateX(-50%) rotate(0deg); }
+  0% { transform: rotate(0deg); }
+  25% { transform: rotate(3.5deg); }
+  50% { transform: rotate(0deg); }
+  75% { transform: rotate(-3.5deg); }
+  100% { transform: rotate(0deg); }
 }
 
 @keyframes sprayFloat {

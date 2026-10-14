@@ -72,12 +72,12 @@ export default function RetroStudyHero({
           </svg>
         </div>
 
-        {/* Right: Vintage Cream Canvas with Bold Red Typography */}
+        {/* Right: Vintage Cream Canvas with Clean Typography */}
         <div className="retro-hero-content">
           <div className="retro-kicker-row">
             <span className="retro-badge-date">
-              {new Date().toLocaleDateString(undefined, {
-                weekday: "short",
+              📅 {new Date().toLocaleDateString(undefined, {
+                weekday: "long",
                 month: "short",
                 day: "numeric",
               })}
@@ -87,13 +87,14 @@ export default function RetroStudyHero({
             </span>
           </div>
 
-          <h1 className="retro-hero-title">
-            <span className="title-line-1">Study Portal</span>
-            <span className="title-line-2">&amp; Daily Planner</span>
+          <h1 className="retro-hero-greeting">
+            Welcome back, <span className="greeting-name">{firstName(user?.name)}</span> 👋
           </h1>
 
-          <p className="retro-hero-subtitle">
-            Hey, <strong>{firstName(user?.name)}</strong> — Ride the wave of your study goals with AI schedules, urgency filters, and zero burnout.
+          <p className="retro-hero-message">
+            {summary?.planned
+              ? "Your study sessions for today are scheduled and ready. Keep your momentum going!"
+              : "Ready to focus? Generate your optimized daily study plan below."}
           </p>
 
           {/* Stats Bar */}
