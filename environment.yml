@@ -1,8 +1,6 @@
-```yaml
 name: base
 channels:
   - conda-forge
-
 dependencies:
   - python=3.10
   - pip
@@ -19,4 +17,3 @@ dependencies:
       - "django-cors-headers>=4.4"
       - "requests>=2.31"
       - "mongomock>=4.1"
-```
